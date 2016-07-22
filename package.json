@@ -1,0 +1,34 @@
+{
+  "name": "timeline",
+  "version": "0.0.1",
+  "main": "timeline.js",
+  "scripts": {
+    "test": "tape tests/*.test.js",
+    "watch": "nodemon --exec 'npm test'"
+  },
+  "devDependencies": {
+    "revise": "github:akbr/revise",
+    "nodemon": "^1.9.2",
+    "tape": "^4.6.0"
+  },
+  "description": "An engine for hybrid synchronous/turn-based games.",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akbr/timeline.git"
+  },
+  "keywords": [
+    "game",
+    "engine",
+    "turn"
+  ],
+  "author": "Aaron Rieke",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/akbr/timeline/issues"
+  },
+  "homepage": "https://github.com/akbr/timeline#readme"
+}
