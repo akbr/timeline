@@ -60,8 +60,6 @@ var glossary = {
       )
     }
   }
-
-
 }
 
 module.exports = glossary

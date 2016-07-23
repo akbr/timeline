@@ -1,18 +1,20 @@
 var onTurnD = require("./onTurn")
 var onResolveD = require("./onResolve")
+var utils = require("./utils")
 
 var makeUpdate = (prep, apply, now, resolved, onResolve = onResolveD, onTurn = onTurnD) => {
   return function update (state) {
     // Prune pending actions
     let pending = state.pending.filter(x => !resolved.some(y => x.id === y.id))
-    if (state.pending !== pending) {
+    if (state.pending.length !== pending.length) {
       state = Object.assign({}, state, {pending})
     }
+    pending = state.pending
 
-    let {start, turn, turnLength, updated} = state.times
+    let {turn, updated} = state.times
 
     // Resolve the next batch or actions preceding the next turn
-    let nextTurnTime = start + (turn * turnLength)
+    let nextTurnTime = utils.getNextTurnTime(state.times)
     let batch = getBatch(pending, nextTurnTime)
     if (batch.length > 0) {
       let batchTime = batch[0].time

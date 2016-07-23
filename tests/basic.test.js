@@ -1,5 +1,6 @@
 var test = require("tape")
 var timeline = require("../timeline")
+var stockGlossary = require("../glossary")
 
 test("inits empty state", t => {
   let {state} = timeline()()
@@ -17,8 +18,11 @@ test("prepares a basic state", t => {
 })
 
 test("handles an unkown action type", t => {
-  let {state, resolved, receipt} = timeline()({}, {type: "foo"})
+  let initialState = {}
+  let result = timeline()(initialState)
+  let {state, resolved, receipt} = timeline()(result.state, {type: "foo"})
   t.equal(resolved.length, 0)
+  t.equal(state, result.state)
   t.equal(receipt.length, 1)
   t.equal(receipt[0].err.type, "unknownActionType")
   t.end()
@@ -135,14 +139,21 @@ test("multiple sync resolves", t => {
 })
 
 test("resolves a turn", t => {
-  t.plan(2)
-  let {state} = timeline()({times:{turnLength:25}})
-  t.ok(state)
+  t.plan(4)
+
+  let update = timeline(stockGlossary)
+  let result = update({times:{turnLength:50}}, [
+    {type: "skipTurn", num: 100},
+    {type: "skip", ms: 100}
+  ])
+
+  t.ok(result.state)
+  t.equals(result.state.times.turn, 103)
+  t.equals(result.resolved.length, 2)
 
   setTimeout(() => {
-    let result = timeline()(state)
-    let stateN = result.state
-    t.equal(stateN.times.turn, 5)
+    result = update(result.state)
+    t.equal(result.state.times.turn, 105)
   }, 100)
 })
 
@@ -163,7 +174,7 @@ test("resolves a turn with actions", t => {
   let initialState = {times: {turnLength:25}, amt: 100}
   let update = timeline(glossary)
 
-  t.plan(5)
+  t.plan(6)
 
   let {state, receipt} = update(initialState, [
     {type: "spend", amt: 50},
@@ -173,6 +184,9 @@ test("resolves a turn with actions", t => {
   t.equal(state.amt, 100)
   t.equal(state.pending.length, 2)
   t.equal(receipt.length, 2)
+
+  let another = update(state)
+  t.equal(another.state, state)
 
   setTimeout(() => {
     let result = update(state)
